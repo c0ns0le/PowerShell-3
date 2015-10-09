@@ -1,4 +1,7 @@
-﻿function Hello-World {
+﻿
+[CmdletBinding()] param()
+
+function Hello-World {
     param (
         [string]$msg = 'Hello World'
     )
