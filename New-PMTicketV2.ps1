@@ -24,11 +24,11 @@
 
 [CmdletBinding()]
 param(
-    [switch]$Log = $false
+    [switch]$Log
 )
 
-Write-Host "Args: $args" -ForegroundColor Red
-break
+
+
 
 #region LIBRARY
 
@@ -56,7 +56,7 @@ break
             [switch]$Save=$false
         )
 
-        # create log variable if not exist
+       # create log variable if not exist
         if ($New -or -not (Test-Path -Path Variable:ExecutionLog)) {
             New-Variable -Name ExecutionLog -Scope Script -Force
             $Script:ExecutionLog = @{
@@ -103,7 +103,6 @@ break
             }
         }
     } #function
-
 
     
     function Set-useUnsafeHeaderParsing {
@@ -162,7 +161,7 @@ break
                 return
             } catch {
                 $logmsg  = "Module '$Name' found at '$scriptDir' but failed to import"
-                $logmsg += "`n" + (Get-Item -Path $scriptDir\$Name | Out-String)
+                $logmsg += "`n" + (Get-ChildItem -Path $scriptDir -Name $Name*)
                 Out-Log -Message $logmsg -Type Warning
             }
         } else {
@@ -990,7 +989,7 @@ break
 
     # start log
     Out-Log "Executing: $($MyInvocation.MyCommand.Path)" -New
-    
+
     # import module
     Write-Progress -Activity 'Initializing' -Status "Importing modules" -PercentComplete 20
     Import-ScriptModule -Name Credential
