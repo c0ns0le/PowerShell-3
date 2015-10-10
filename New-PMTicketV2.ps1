@@ -991,8 +991,8 @@ param(
     
     # import module
     Write-Progress -Activity 'Initializing' -Status "Importing modules" -PercentComplete 20
-    Import-ScriptModule -Name Credential -Force
-    Import-ScriptModule -Name Logging -Optional -Force
+    Import-ScriptModule -Name Credential
+    Import-ScriptModule -Name Logging -Optional
 
     # Create variable to hold all data
     $Data = @{}
