@@ -87,15 +87,15 @@ param(
                 Export-Clixml -InputObject $Script:ExecutionLog -Path $path -Depth 5 -Force
                 Remove-Variable -Name ExecutionLog -Scope Script -Force -ErrorAction SilentlyContinue
                 if ($Type -eq 'TerminatingError') {
-                    # try get real owner name from the script
+                    # try get real name from the script
                         $path = $MyInvocation.PSCommandPath
                         if ($path -and (Test-Path -Path $path) -and $(
-                            Select-String -Path $path -Pattern (".*Aut"+"hor.*|.*Ow"+"ner.*") -ErrorAction SilentlyContinue | `
+                            Select-String -Path $path -Pattern (".*Aut"+"hor .*|.*Ow"+"ner .*") -ErrorAction SilentlyContinue | `
                             Tee-Object -Variable results
-                        ))   {$owner = $results[0].Line.Trim()}
-                        else {$owner = 'Owner'}
-                    $errmsg = "`nTerminating Error. Please e-mail 'ExecutionLog.xml' from your desktop to script $owner"
-                    $errmsg += $Message
+                        ))   {$developer = $results[0].Line.Trim()}
+                        else {$developer = 'Developer'}
+                    $errmsg  = "`nTerminating Error. Please e-mail 'ExecutionLog.xml' from your desktop to script $developer"
+                    $errmsg += "`n$Message"
                     Write-Host $errmsg -ForegroundColor Red
                 }
             }
