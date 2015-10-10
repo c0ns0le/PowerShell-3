@@ -27,6 +27,8 @@ param(
     [switch]$Log = $false
 )
 
+Write-Host "Args: $args" -ForegroundColor Red
+break
 
 #region LIBRARY
 
