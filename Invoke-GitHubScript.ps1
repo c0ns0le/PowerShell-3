@@ -94,4 +94,7 @@
             }
         }
     }
+    end {
+        New-Alias -Name igh -Value $MyInvocation.MyCommand.Name -Scope Global -Force
+    }
 #}
