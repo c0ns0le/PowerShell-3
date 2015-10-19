@@ -21,12 +21,12 @@
 .NOTES
     Author : Dmitry Gancho
              dmitry@ganco.com
-    Date   : 10/17/2015
+    Date   : 10/18/2015
     Version: 1.0
 #>
     param (
         [Parameter(Mandatory,ValueFromPipeline,ValueFromPipelineByPropertyName,Position=0,
-            HelpMessage="Path to GitHub file, format: Owner/Repo/Folder/File")]
+            HelpMessage="Path to GitHub file, format: Owner/Repo/Folder/File.ext")]
         [Alias('path')]
         [string[]]$GitHubPath,
 
@@ -39,12 +39,12 @@
             # get GibHub creds
             $regpath = 'HKCU:\Environment\Credentials\GitHub'
             if ((Test-Path -Path $regpath) -and (&{
-                $Script:user = Get-ItemProperty -Path $regpath | select -exp UserName
-                $Script:pass = Get-ItemProperty -Path $regpath | select -exp Password
-                $user -and $pass
+                $Script:u = Get-ItemProperty -Path $regpath | select -exp UserName
+                $Script:p = Get-ItemProperty -Path $regpath | select -exp Password
+                $Script:u -and $Script:p
             })) {
-                $user = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR((ConvertTo-SecureString $user)))
-                $pass = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR((ConvertTo-SecureString $pass)))
+                $user = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR((ConvertTo-SecureString $Script:u)))
+                $pass = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR((ConvertTo-SecureString $Script:p)))
             } else {
                 $cred = Get-Credential -Message 'Enter credential for GitHub:'
                 if (-not $cred) {return $null}
@@ -53,7 +53,8 @@
                 if (-not $user -or -not $pass) {return $null}
                 # offer User to save credential
                 [void][Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms')
-                if ([Windows.Forms.MessageBox]::Show('Save GitHub credtial for future use?','Question',1,'Question') -eq 'OK') {
+                [System.Windows.Forms.Application]::EnableVisualStyles()
+                if ([Windows.Forms.MessageBox]::Show('Save GitHub credential for future use?','Question',1,'Question') -eq 'OK') {
                     if (-not (Test-Path -Path $regpath)) {New-Item -Path $regpath -Force | Out-Null}
                     $enuser = $user | ConvertTo-SecureString -AsPlainText -Force | ConvertFrom-SecureString
                     $enpass = $pass | ConvertTo-SecureString -AsPlainText -Force | ConvertFrom-SecureString
@@ -85,9 +86,12 @@
             }
             # decrypt content and execute
             $content = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String($response.content))
+            # not sure why GitHub adds '???' at the beginning of some files, so remove this
+            $content = $content -replace '\?\?\?'
             if ($_ -match ".+\.psm1$") {
-                # module .psm1
-                Import-Module (New-Module -ScriptBlock ([scriptblock]::Create($content)))
+                    # module .psm1
+                    $name = ($_ -split '/' | select -Last 1) -split '\.' | select -First 1 
+                    Import-Module (New-Module -Name $name -ScriptBlock ([scriptblock]::Create($content)))
             } else {
                 # script .ps1
                 Invoke-Expression $content

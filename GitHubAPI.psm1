@@ -312,11 +312,11 @@ function Receive-GitGubContent {
         Write-Host $errmsg -ForegroundColor Red
     }
 
-    # if response has content property, this is base64 encoded file content
-    # convert it
+    # if response has content property, this is base64 encoded file content, so convert it
+    # and remove '???' as GitHub adds this at the beginning of some files
     $response | % {
         try {
-            $_.content = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String($_.content))
+            $_.content = ([System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String($_.content)) -replace '\?\?\?')
             $_.encoding = $null
         } catch {}
     } #%
@@ -352,7 +352,7 @@ function Invoke-GitHubScript {
 #>
     param (
         [Parameter(Mandatory,ValueFromPipeline,ValueFromPipelineByPropertyName,Position=0,
-            HelpMessage="Path to GitHub file, format: Owner/Repo/Folder/File")]
+            HelpMessage="Path to GitHub file, format: Owner/Repo/Folder/File.ext")]
         [Alias('path')]
         [string[]]$GitHubPath,
 
@@ -413,7 +413,8 @@ function Invoke-GitHubScript {
             $content = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String($response.content))
             if ($_ -match ".+\.psm1$") {
                 # module .psm1
-                Import-Module (New-Module -ScriptBlock ([scriptblock]::Create($content)))
+                $name = ($_ -split '/' | select -Last 1) -split '\.' | select -First 1 
+                Import-Module (New-Module -Name $name -ScriptBlock ([scriptblock]::Create($content)))
             } else {
                 # script .ps1
                 Invoke-Expression $content
@@ -556,4 +557,5 @@ function Publish-GitGubFile {
 
 # *** Aliases and Export ***
 Export-ModuleMember -Function *
+
 
