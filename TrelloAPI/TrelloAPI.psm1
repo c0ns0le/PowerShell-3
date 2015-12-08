@@ -14,6 +14,7 @@
     Search-TrelloObjects
     New-TrelloCard
     Update-TrelloCard
+    Move-TrelloCard
     Import-TrelloCredential
     Set-useUnsafeHeaderParsing
 
@@ -288,7 +289,7 @@ function Search-TrelloObjects {
     Optional.
     Authenticated Trello WebSession
 .EXAMPLE
-    Search-TrelloObjects -Query <Query> -ObjectType Members
+    Search-TrelloObjects -ObjectType Cards -Query "cloud-lse repo" | select -exp cards
 .INPUTS
     [string]
     [string]
@@ -296,6 +297,7 @@ function Search-TrelloObjects {
 .OUTPUTS
     [Object[]]
 .LINK
+    https://developers.trello.com/advanced-reference/search
 #>
     [cmdletbinding()]
     param (
@@ -417,7 +419,7 @@ function Update-TrelloCard {
     Optional.
     Authenticated Trello WebSession
 .EXAMPLE
-    New-TrelloCard -Name NewCard -ListId <ListID>
+    Update-TrelloCard -CardId <CardId> -ListId <ListID> -Description <Description>
 .INPUTS
     [string]
     [string]
@@ -470,6 +472,72 @@ function Update-TrelloCard {
         $response = Invoke-RestMethod @params
         Write-Verbose "Invoke-RestMethod response:`n$(ConvertTo-Json $response)"
     }
+
+    return $response
+
+}
+
+
+
+function Move-TrelloCard {
+<#
+.SYNOPSIS
+    Move existing Trello Card to a List via API.
+.DESCRIPTION
+    Author   : Dmitry Gancho
+    Last edit: 12/8/2015
+.PARAMETER CardId
+    Required.
+    Card Id.
+.PARAMETER ListId
+    Required.
+    List Id the Card to be moved to.
+.PARAMETER WebSession
+    Optional.
+    Authenticated Trello WebSession
+.EXAMPLE
+    $CardName = 'cloud-lse repo not syncing'
+    $MoveToListName = 'Done'
+    $BoardName = 'Customer Care'
+    $CardId = Search-TrelloObjects -ObjectType Cards -Query $CardName | select -exp cards | select -exp Id
+    $BoardId = Search-TrelloObjects -ObjectType Boards -Query $BoardName | select -exp boards | where name -eq $BoardName | select -exp Id
+    $ListId = Get-TrelloBoardObjects -BoardId $BoardId -ObjectType Lists | where name -eq $MoveToListName | select -exp Id
+    Move-TrelloCard -CardId $CardId -ListId $ListId
+.INPUTS
+    [string]
+    [string]
+    [string]
+    [Microsoft.PowerShell.Commands.WebRequestSession]
+.OUTPUTS
+    [Object]
+.LINK
+    https://developers.trello.com/advanced-reference/card#put-1-cards-card-id-or-shortlink-idlist
+#>
+    [cmdletbinding()]
+    param (
+        [Parameter(Mandatory)]
+        [string]$CardId,
+
+        [Parameter(Mandatory)]
+        [string]$ListId,
+
+        [Parameter()][Alias('ws')]
+        [Microsoft.PowerShell.Commands.WebRequestSession]$WebSession = (New-ZenDeskApiSession)
+    )
+    $base = Get-TrelloApiBaseUri
+    # PUT /1/cards/[card id or shortlink]/idList
+    $uri  = "$base/cards/$CardId/$ListId"
+    $uri += '&key='   + $WebSession.Headers.Key
+    $uri += '&token=' + $WebSession.Headers.Token
+    $params = @{
+        Method = 'PUT'
+        Uri = $uri
+        ErrorAction = 'Stop'
+    }
+    Set-useUnsafeHeaderParsing
+    Write-Verbose "Invoke-RestMethod params:`n$(ConvertTo-Json $params)"
+    $response = Invoke-RestMethod @params
+    Write-Verbose "Invoke-RestMethod response:`n$(ConvertTo-Json $response)"
 
     return $response
 

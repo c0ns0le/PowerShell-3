@@ -15,7 +15,7 @@ RootModule = 'Utility'
 ModuleVersion = '12.8'
 
 # ID used to uniquely identify this module
-GUID = '74dd577b-3bdd-45f8-8262-54d28fb71c58'
+GUID = '3e5fab64-c889-4e54-a8d6-81eac4a98b6c'
 
 # Author of this module
 Author = 'Dmitry Gancho'

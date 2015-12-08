@@ -39,7 +39,7 @@
 
     .SERVICE
         # F8 line below to generate module manifest and optionally copy contents of this module folder to destination folder.
-        Publish-ThisModule #-Destination "$env:USERPROFILE\Documents\GitHub\toolbox\PowerShell Modules"
+        Publish-ThisModule -Destination "$env:USERPROFILE\Documents\GitHub\toolbox\PowerShell Modules"
 #>
 
 
