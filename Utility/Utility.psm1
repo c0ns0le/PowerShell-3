@@ -155,8 +155,10 @@ function Publish-ThisModule {
     }
     # generare manifest
     New-ModuleManifest @param
-    # re-save to UTF-8 encoded file (for GutHub to recognize at text)
-    [System.Io.File]::ReadAllText($manifestPath) | Out-File -FilePath $manifestPath -Encoding utf8 -Force
+    # re-save to UTF8-noBOM encoded file (for GutHub to recognize at text)
+    $content = [System.Io.File]::ReadAllText($manifestPath)
+    $utf8NoBomEncoding = New-Object System.Text.UTF8Encoding($False)
+    [System.IO.File]::WriteAllText($manifestPath,$content,$utf8NoBomEncoding)
     # import module and report
     Import-Module -Name $modName -Global -Force -PassThru -ErrorAction SilentlyContinue | `
     Format-List Name,Description,Version,Author,CompanyName,Moduletype,ModuleBase,Path,@{
