@@ -137,9 +137,10 @@ function Publish-ThisModule {
     $modName,$null = $modFileName -split '\.'
     $modContent = (Get-Content -Path $psISE.CurrentFile.FullPath) -join "`n"
     $modHeader = $modContent.Substring(($modContent.IndexOf('<'+'#')),($modContent.IndexOf('#'+'>')+2))
+    $manifestPath = $psISE.CurrentFile.FullPath -replace '\.psm1','.psd1'
     # generate info for manifest
     $param = @{
-        Path               = ($psISE.CurrentFile.FullPath -replace 'psm1','psd1')
+        Path               = $manifestPath
         RootModule         = $modName
         FunctionsToExport  = (get-section -name FUNCTIONS)
         Description        = ((get-section -name DESCRIPTION) -join "`n")
@@ -154,6 +155,8 @@ function Publish-ThisModule {
     }
     # generare manifest
     New-ModuleManifest @param
+    # re-save to UTF-8 encoded file (for GutHub to recognize at text)
+    [System.Io.File]::ReadAllText($manifestPath) | Out-File -FilePath $manifestPath -Encoding utf8 -Force
     # import module and report
     Import-Module -Name $modName -Global -Force -PassThru -ErrorAction SilentlyContinue | `
     Format-List Name,Description,Version,Author,CompanyName,Moduletype,ModuleBase,Path,@{
