@@ -15,7 +15,7 @@ RootModule = 'Juniper'
 ModuleVersion = '12.8'
 
 # ID used to uniquely identify this module
-GUID = '01c03e78-9cac-4339-bb8d-999417995998'
+GUID = 'b5f421a5-0c04-4f87-a8b8-0a9b52885ee5'
 
 # Author of this module
 Author = 'Dmitry Gancho'

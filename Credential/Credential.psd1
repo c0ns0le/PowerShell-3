@@ -15,7 +15,7 @@ RootModule = 'Credential'
 ModuleVersion = '12.8'
 
 # ID used to uniquely identify this module
-GUID = '2657c455-bec5-47fb-880e-2bb85566473c'
+GUID = 'ef38102b-c1ea-4043-b489-40d16b647d18'
 
 # Author of this module
 Author = 'Dmitry Gancho'

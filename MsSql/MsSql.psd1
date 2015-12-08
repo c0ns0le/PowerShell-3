@@ -15,7 +15,7 @@ RootModule = 'MsSql'
 ModuleVersion = '12.8'
 
 # ID used to uniquely identify this module
-GUID = 'bbc0b36b-991f-40e1-bc23-380d7cc554c3'
+GUID = 'aecd467f-e803-40f7-8a3c-e6c29d131b09'
 
 # Author of this module
 Author = 'Dmitry Gancho, dmitry.gancho@ctl.io'

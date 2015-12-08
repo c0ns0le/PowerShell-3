@@ -15,7 +15,7 @@ RootModule = 'Office365'
 ModuleVersion = '12.8'
 
 # ID used to uniquely identify this module
-GUID = '53156993-124c-4d76-8a72-626895bad492'
+GUID = 'ac3a2df7-3c89-4b4c-ae93-25400ef54aa3'
 
 # Author of this module
 Author = 'Dmitry Gancho, dmitry.gancho@ctl.io'
