@@ -1,3 +1,6 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text eol=crlf
+
 # Encrypt the repository
 # Remove/modify this line if the repository is meant to be open-source
 # *.* filter=git-crypt diff=git-crypt
