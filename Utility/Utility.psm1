@@ -39,7 +39,7 @@
 
     .SERVICE
         # F8 line below to generate module manifest and optionally copy contents of this module folder to destination folder.
-        Publish-ThisModule -Destination "$env:USERPROFILE\Documents\GitHub\toolbox\PowerShell Modules"
+        Publish-ThisModule #-Destination "$env:USERPROFILE\Documents\GitHub\toolbox\PowerShell Modules"
 #>
 
 
@@ -155,9 +155,9 @@ function Publish-ThisModule {
     }
     # generare manifest
     New-ModuleManifest @param
-    # re-save to UTF8-noBOM encoded file (for GutHub to recognize at text)
-    $content = [System.Io.File]::ReadAllText($manifestPath)
-    $utf8NoBomEncoding = New-Object System.Text.UTF8Encoding($False)
+    # re-save to UTF8 no-BOM encoded file (for GutHub to recognize at text)
+    $content = [System.IO.File]::ReadAllText($manifestPath)
+    $utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
     [System.IO.File]::WriteAllText($manifestPath,$content,$utf8NoBomEncoding)
     # import module and report
     Import-Module -Name $modName -Global -Force -PassThru -ErrorAction SilentlyContinue | `
